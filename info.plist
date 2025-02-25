@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string></string>
+	<string>com.github.lucsouther.watchnow.</string>
 	<key>category</key>
 	<string>Internet</string>
 	<key>connections</key>
@@ -126,9 +126,7 @@
 				<key>runningsubtext</key>
 				<string></string>
 				<key>script</key>
-				<string>#!/Users/lucassouthwell/python-envs/alfred-venv/bin/python
-
-import os
+				<string>import os
 import sys
 import json
 import urllib.request
@@ -740,7 +738,9 @@ ICON_DIR = os.path.join(WORKFLOW_DIR, "WatchNOW_icons")
 # Get the selected icon name from Alfred
 ICON_NAME = sys.argv[1]
 ICON_PATH = os.path.join(ICON_DIR, f"{ICON_NAME}.png")
-ALFRED_VERSION = "Alfred 5"  # Change to "Alfred 4" if using an older version
+
+# Alfred Workflow Bundle ID (Update if needed)
+WORKFLOW_BUNDLE_ID = "com.github.lucsouther.watchnow"
 
 # Mapping icon filenames to nicely formatted display names
 ICON_NAME_MAPPING = {
@@ -749,16 +749,16 @@ ICON_NAME_MAPPING = {
     "orange": "Orange Flame",
     "grapefruit": "Pink Grapefruit",
     "red": "Dark Red",
-	"darkpurple": "Dark Purple",
-	"forrest": "Forrest Green",
-	"summer": "Summer",
-	"easter": "Easter", 
-	"colorful": "Colorful",
-	"colorful2": "Colorful 2",
-	"pastel": "Pastel",
-	"blurple": "Blurple",
-	"cottoncandy": "Cotton Candy",
-	"tiedye": "Tie-Dye"
+    "darkpurple": "Dark Purple",
+    "forrest": "Forrest Green",
+    "summer": "Summer",
+    "easter": "Easter", 
+    "colorful": "Colorful",
+    "colorful2": "Colorful 2",
+    "pastel": "Pastel",
+    "blurple": "Blurple",
+    "cottoncandy": "Cotton Candy",
+    "tiedye": "Tie-Dye"
 }
 
 # Get formatted display name
@@ -775,10 +775,8 @@ if os.path.exists(ICON_PATH):
     # Notify user of success
     os.system(f'osascript -e \'display notification "Workflow icon updated to {DISPLAY_NAME}!" with title "WatchNOW"\'')
     
-    # Restart Alfred to apply changes
-    os.system(f'osascript -e \'tell application "{ALFRED_VERSION}" to quit\'')
-    os.system("sleep 1")
-    os.system(f'open -a "{ALFRED_VERSION}"')
+    # Reload only the workflow, instead of quitting Alfred
+    os.system(f'osascript -e \'tell application id "com.runningwithcrayons.Alfred" to reload workflow "{WORKFLOW_BUNDLE_ID}"\'')
 else:
     # Notify user if icon was not found
     os.system(f'osascript -e \'display notification "Error: Icon {DISPLAY_NAME} not found!" with title "WatchNOW"\'')</string>
@@ -926,12 +924,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Netflix</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Netflix</string>
+			<string>Show</string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -945,12 +943,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Hulu</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Hulu</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -964,12 +962,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Disney+</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Disney+</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -983,12 +981,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Peacock</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Peacock</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1002,12 +1000,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Max (HBO Max)</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Max (HBO Max)</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1021,12 +1019,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Amazon Prime Video</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Amazon Prime Video</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1040,12 +1038,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Apple TV+</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Apple TV+</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1059,12 +1057,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Paramount+</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Paramount+</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1078,12 +1076,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Fandango (Vudu)</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Fandango (Vudu)</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1097,12 +1095,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Google Play Store</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Google Play Store</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1116,12 +1114,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>MIcrosoft Store</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Microsoft Store</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1135,12 +1133,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Fubo TV</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show FuboTV</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1154,12 +1152,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Youtube</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Youtube</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1173,12 +1171,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Itunes</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Itunes</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1192,12 +1190,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Spectrum On Demand</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Spectrum On Demand</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1211,12 +1209,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>FXNow</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show FXNow</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1230,12 +1228,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>MGM+</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show MGM+</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1249,12 +1247,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Tubi TV</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Tubi TV</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1268,12 +1266,12 @@ This workflow requires API keys from:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string></string>
+				<string>Hoopla</string>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Show Hoopla</string>
+			<string></string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
@@ -1353,22 +1351,52 @@ This workflow requires API keys from:
 			<key>variable</key>
 			<string>COUNTRY_CODE</string>
 		</dict>
-	</array>
-	<key>variables</key>
-	<dict>
-		<key>OMDB_API_KEY</key>
-		<string>f3ec77f1</string>
-		<key>TMDB_API_KEY</key>
-		<string>50d59838b75f35e43967a7e0ba7a3c36</string>
-	</dict>
-	<key>variablesdontexport</key>
-	<array>
-		<string>TMDB_API_KEY</string>
-		<string>OMDB_API_KEY</string>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Get your TMDb API key for free on https://developer.themoviedb.org/reference/intro/getting-started and paste here</string>
+			<key>label</key>
+			<string>TMDb API Key</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>TMDB_API_KEY</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Get your free OMDb API key for free from https://www.omdbapi.com/apikey.aspx and paste here</string>
+			<key>label</key>
+			<string>OMDb API Key</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>OMDB_API_KEY</string>
+		</dict>
 	</array>
 	<key>version</key>
 	<string>1.0.0</string>
 	<key>webaddress</key>
-	<string>https://github.com/lucsouth/WatchNOW</string>
+	<string>https://github.com/lucsouther/WatchNOWv2</string>
 </dict>
 </plist>
