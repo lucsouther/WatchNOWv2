@@ -1,0 +1,1374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string></string>
+	<key>category</key>
+	<string>Internet</string>
+	<key>connections</key>
+	<dict>
+		<key>0E5F5518-55BF-4419-9887-609C8452ADBC</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>85021313-7D1F-4A07-9C8A-74839C0CD1C2</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>3786C485-4E78-47C5-82FA-FFB159BBC576</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>5487E56D-9D43-47C7-A11B-FADD3D4547B3</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>5487E56D-9D43-47C7-A11B-FADD3D4547B3</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>90EC2C01-FA89-47C4-A483-2B4C72B7B7B7</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Lucas Southwell</string>
+	<key>description</key>
+	<string>Search for a TV Show or movie, find where it's available, configure your streaming services, and go straight to your content</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>WatchNOW</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>skipqueryencode</key>
+				<false/>
+				<key>skipvarencode</key>
+				<false/>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string></string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>90EC2C01-FA89-47C4-A483-2B4C72B7B7B7</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>keyword</key>
+				<string>watch</string>
+				<key>subtext</key>
+				<string>Search for a movie, TV show, or streaming service</string>
+				<key>text</key>
+				<string>WatchNOW</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>3786C485-4E78-47C5-82FA-FFB159BBC576</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string></string>
+				<key>script</key>
+				<string>#!/Users/lucassouthwell/python-envs/alfred-venv/bin/python
+
+import os
+import sys
+import json
+import urllib.request
+import urllib.parse
+import subprocess
+
+# Mapping for direct homepage access if the argument is a streaming provider
+DIRECT_ACCESS_MAPPING = {
+    "youtube": "https://www.youtube.com/",
+    "peacock": "https://www.peacocktv.com/",
+    "netflix": "https://www.netflix.com/",
+    "disney+": "https://www.disneyplus.com/",
+	"disney": "https://www.disneyplus.com/",
+    "hulu": "https://www.hulu.com/",
+    "amazon prime": "https://www.amazon.com/gp/video/storefront",
+    "max": "https://play.max.com/home",
+    "apple tv+": "https://tv.apple.com/",
+	"apple tv": "https://tv.apple.com/",
+    "paramount+": "https://www.paramountplus.com/",
+    "fubo": "https://www.fubo.tv/",
+    "fxnow": "https://fxnow.fxnetworks.com/",
+    "google play": "https://play.google.com/store/movies",
+	"itunes": "https://itunes.apple.com/us/search?term=",
+	"microsoft store": "https://www.microsoft.com/en-us/store/movies-and-tv?icid=TopNavMoviesTv",
+	"fandango": "https://athome.fandango.com/content/movies/home",
+	"vudu": "https://athome.fandango.com/content/movies/home",
+	"spectrum on demand": "https://ondemand.spectrum.net",
+	"spectrum": "https://ondemand.spectrum.net",
+	"pluto tv": "https://pluto.tv/us/hub/home?utm_medium=deeplink&amp;utm_source=justwatch",
+	"hoopla": "https://www.hoopladigital.com/home",
+	"tubi tv": "https://tubitv.com",
+	"the roku channel": "https://therokuchannel.roku.com/",
+	"mgm+": "https://www.mgmplus.com/browse",
+	"plex": "https://watch.plex.tv"
+
+
+}
+
+# Get user input (e.g., "youtube" or "peacock")
+query = sys.argv[1] if len(sys.argv) &gt; 1 else None
+query_lower = query.lower().strip()
+
+# Check if the query matches a known streaming provider
+if query_lower in DIRECT_ACCESS_MAPPING:
+    direct_url = DIRECT_ACCESS_MAPPING[query_lower]
+
+    # Return Alfred JSON output
+    print(json.dumps({
+        "items": [{
+            "title": f"Open {query.capitalize()}",
+            "subtitle": f"Go to {query.capitalize()} homepage",
+            "arg": direct_url,
+            "icon": {"path": f"icons/{query_lower.replace(' ', '_')}_logo.png"}
+        }]
+    }))
+    sys.exit(0)  # Exit after handling the direct provider request
+
+# If no match, continue with TMDb search
+
+def is_provider_enabled(provider_name):
+    """Returns True only if the provider is explicitly enabled in Alfred's workflow configuration."""
+    
+    # Normalize provider name to match environment variable format
+    env_var_name = f"SHOW_{provider_name.upper().strip().replace(' ', '_').replace('+', 'PLUS')}"
+    
+    # Now defaults to DISABLED if not set
+    enabled = os.getenv(env_var_name) == "1"
+    
+    sys.stderr.write(f"Checking provider: {provider_name}, Enabled: {enabled}\n")  # ✅ Debugging
+    return enabled
+
+# Get user input (movie/show name)
+query = sys.argv[1] if len(sys.argv) &gt; 1 else ""
+
+# Get API key and user's preferred streaming services
+tmdb_api_key = os.getenv("TMDB_API_KEY")
+if not tmdb_api_key:
+    print(json.dumps({"items": [{"title": "Error", "subtitle": "Missing TMDb API Key. Set it in Alfred’s workflow variables.", "arg": ""}]}))
+    sys.exit(1)
+
+# List of supported TMDb country codes (see below for full list)
+SUPPORTED_COUNTRIES = {
+    "US": "United States",
+    "CA": "Canada",
+    "GB": "United Kingdom",
+    "AU": "Australia",
+    "DE": "Germany",
+    "FR": "France",
+    "IN": "India",
+    "JP": "Japan",
+    "ES": "Spain",
+    "IT": "Italy",
+    "MX": "Mexico",
+    "BR": "Brazil",
+    "KR": "South Korea",
+    "CN": "China"
+}
+
+country_code = os.getenv("COUNTRY_CODE", "US").upper()  # Default to US
+if country_code not in SUPPORTED_COUNTRIES:
+    sys.stderr.write(f"Invalid COUNTRY_CODE '{country_code}', defaulting to 'US'\n")
+    country_code = "US"  # Fallback to US
+
+# If no API key is set, return an error
+if not tmdb_api_key:
+    print(json.dumps({"items": [{"title": "Error", "subtitle": "Missing TMDb API Key. Set it in Alfred's workflow variables.", "arg": ""}]}))
+    sys.exit(1)
+
+# Function to make an API request using urllib
+def fetch_url(url):
+    try:
+        request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(request) as response:
+            return json.loads(response.read().decode())
+    except Exception as e:
+        return None  # Return None if request fails
+
+
+# Step 1: Search TMDb for the movie/show
+search_url = f"https://api.themoviedb.org/3/search/multi?api_key={tmdb_api_key}&amp;query={urllib.parse.quote(query)}"
+search_results = fetch_url(search_url)
+
+if not search_results or "results" not in search_results or not search_results["results"]:
+    print(json.dumps({"items": [{"title": "Not Found", "subtitle": "No matching movie or TV show found", "arg": ""}]}))
+    sys.exit(0)
+
+# Get the first search result (best match)
+best_match = search_results["results"][0]
+
+# Extract movie details
+movie_title = best_match.get("title", best_match.get("name", "Unknown Title"))  # Title for movies/shows
+movie_year = best_match.get("release_date", best_match.get("first_air_date", ""))[:4]  # Year
+movie_description = best_match.get("overview", "No description available.")
+movie_genre_ids = best_match.get("genre_ids", [])
+tmdb_poster_path = best_match.get("poster_path", None)  # TMDb poster
+imdb_rating = best_match.get("vote_average", "N/A")  # TMDb rating
+
+# TMDb base URL for images
+TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
+movie_poster_url = f"{TMDB_IMAGE_BASE_URL}{tmdb_poster_path}" if tmdb_poster_path else "icons/default_poster.png"
+
+# Convert genre IDs to genre names (optional)
+GENRE_MAPPING = {
+    28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime",
+    99: "Documentary", 18: "Drama", 10751: "Family", 14: "Fantasy", 36: "History",
+    27: "Horror", 10402: "Music", 9648: "Mystery", 10749: "Romance", 878: "Sci-Fi",
+    10770: "TV Movie", 53: "Thriller", 10752: "War", 37: "Western"
+}
+
+movie_genres = ", ".join([GENRE_MAPPING.get(gid, "Unknown") for gid in movie_genre_ids]) if movie_genre_ids else "Unknown"
+
+tmdb_id = best_match["id"]
+media_type = best_match["media_type"]
+
+# Step 2: Get streaming provider info from TMDb (only for the specified country)
+watch_url = f"https://api.themoviedb.org/3/{media_type}/{tmdb_id}/watch/providers?api_key={tmdb_api_key}"
+watch_data = fetch_url(watch_url)
+
+# Step 3: Get detailed movie/show info (including IMDb ID)
+details_url = f"https://api.themoviedb.org/3/{media_type}/{tmdb_id}?api_key={tmdb_api_key}"
+details_data = fetch_url(details_url)
+
+imdb_id = details_data.get("imdb_id", None)  # Extract IMDb ID
+imdb_rating = details_data.get("vote_average", None)  # TMDb's own rating
+
+if not watch_data or "results" not in watch_data or country_code not in watch_data["results"]:
+    print(json.dumps({"items": [{"title": "No streaming info", "subtitle": f"No streaming data for {query} in {country_code}", "arg": ""}]}))
+    sys.exit(0)
+
+# Extract providers only for the selected country (Default: US)
+country_providers = watch_data["results"].get(country_code, {})
+
+# Debug: Show what TMDb is returning
+sys.stderr.write("Raw Provider Names from TMDb: " + json.dumps(
+    [provider["provider_name"] for category in country_providers.values() if isinstance(category, list) for provider in category]
+) + "\n")
+
+omdb_api_key = os.getenv("OMDB_API_KEY")  # Fetch API key from Alfred's workflow variables
+rotten_tomatoes_score = "N/A"
+metacritic_score = "N/A"
+
+omdb_data = None  # Initialize to avoid NameError
+
+if best_match.get("title") and omdb_api_key:  # Get movie/tv ratings
+    movie_title = best_match["title"]
+    omdb_url = f"http://www.omdbapi.com/?t={urllib.parse.quote(movie_title)}&amp;apikey={omdb_api_key}"
+    omdb_data = fetch_url(omdb_url)  # Fetch and assign data
+
+    if omdb_data and "Ratings" in omdb_data:
+        for rating in omdb_data["Ratings"]:
+            if rating["Source"] == "Rotten Tomatoes":
+                rotten_tomatoes_score = rating["Value"]  # Format: "85%"
+            elif rating["Source"] == "Metacritic":
+                metacritic_score = rating["Value"].split("/")[0]  # Extract only the numeric score
+
+# Ensure IMDb rating always displays
+imdb_rating = details_data.get("vote_average", "N/A")  # TMDb's own rating
+
+# ✅ Format ratings for display
+ratings_text = (
+    f"⭐ IMDb: {imdb_rating}/10\n"
+    f"🍅 Rotten Tomatoes: {rotten_tomatoes_score}\n"
+    f"📊 Metacritic: {metacritic_score}"
+)
+
+# Extract streaming and purchase providers
+streaming_providers = {}
+purchase_providers = {}
+free_providers = {}
+ads_providers = {}
+
+if "flatrate" in country_providers:  # Subscription-based streaming
+    for provider in country_providers["flatrate"]:
+        provider_name = provider["provider_name"].strip().lower()
+        provider_link = provider.get("watch_link", None)  # Direct TMDb watch link
+        streaming_providers[provider_name] = provider_link
+
+if "buy" in country_providers:  # Purchase/rental options
+    for provider in country_providers["buy"]:
+        provider_name = provider["provider_name"].strip().lower()
+        provider_link = provider.get("watch_link", None)
+        purchase_providers[provider_name] = provider_link
+
+if "free" in country_providers:  # Purchase/rental options
+    for provider in country_providers["free"]:
+        provider_name = provider["provider_name"].strip().lower()
+        provider_link = provider.get("watch_link", None)
+        free_providers[provider_name] = provider_link
+
+if "ads" in country_providers:  # Purchase/rental options
+    for provider in country_providers["ads"]:
+        provider_name = provider["provider_name"].strip().lower()
+        provider_link = provider.get("watch_link", None)
+        ads_providers[provider_name] = provider_link
+
+# Normalize Provider Names for Matching
+PROVIDER_MAPPING = {
+    "netflix": "Netflix",
+    "netflix basic with ads": "Netflix",
+    "disney+": "Disney+",
+    "disney plus": "Disney+",
+    "disneyplus": "Disney+",
+    "hulu": "Hulu",
+    "amazon prime video": "Amazon Prime Video",
+	"amazon prime video with ads": "Amazon Prime Video",
+    "amazon prime": "Amazon Prime Video",
+    "amazon video": "Amazon Prime Video",
+    "peacock": "Peacock",
+    "peacock premium": "Peacock",
+	"peacock premium plus": "Peacock",
+    "peacock tv": "Peacock",
+    "hbo max": "Max",
+    "max": "Max",
+    "apple tv+": "Apple TV+",
+    "apple tv": "Apple TV+",
+    "apple tv plus": "Apple TV+",
+    "apple tv plus amazon channel": "Apple TV+",
+    "paramount+": "Paramount+",
+    "paramount plus": "Paramount+",
+    "fubo": "Fubo",
+    "fubo tv": "Fubo",
+    "fubotv": "Fubo",
+    "fxnow": "FXNow",
+    "fx now": "FXNow",
+    "google play movies": "Google Play",
+    "youtube": "YouTube",
+    "itunes": "iTunes",
+    "apple itunes": "iTunes",
+    "microsoft store": "Microsoft Store",
+    "vudu": "Fandango",
+    "fandango at home": "Fandango",
+	"vudu free": "vudu",
+	"spectrum": "Spectrum On Demand",
+	"spectrum on demand": "Spectrum On Demand",
+	"spectrumondemand": "Spectrum On Demand",
+	"spectrum ondemand": "Spectrum On Demand",
+	"pluto tv": "Pluto TV",
+	"tubi tv": "Tubi TV",
+	"tubi": "Tubi TV",
+	"mgm+": "MGM+",
+	"mgm+ amazon channel": "MGM+",
+	"mgm plus roku premium channel": "MGM+",
+	"mgm plus": "MGM+",
+	"mgm plus amazon channel": "MGM+",
+	"mgm Plus roku premium channel": "MGM+",
+	"plex": "Plex",
+	"hoopla": "Hoopla", 
+	"the roku channel": "The Roku Channel"
+	
+}
+
+# Debug: Print mapped provider names
+mapped_streaming_providers = {PROVIDER_MAPPING.get(provider, provider): link for provider, link in streaming_providers.items()}
+mapped_purchase_providers = {PROVIDER_MAPPING.get(provider, provider): link for provider, link in purchase_providers.items()}
+mapped_free_providers = {PROVIDER_MAPPING.get(provider, provider): link for provider, link in free_providers.items()}
+mapped_ads_providers = {PROVIDER_MAPPING.get(provider, provider): link for provider, link in ads_providers.items()}
+
+
+sys.stderr.write("Mapped Streaming Providers: " + json.dumps(list(mapped_streaming_providers.keys())) + "\n")
+sys.stderr.write("Mapped Purchase Providers: " + json.dumps(list(mapped_purchase_providers.keys())) + "\n")
+sys.stderr.write("Mapped free Providers: " + json.dumps(list(mapped_free_providers.keys())) + "\n")
+sys.stderr.write("Mapped ads Providers: " + json.dumps(list(mapped_ads_providers.keys())) + "\n")
+
+# Hardcoded icon filenames
+ICON_PATH = "icons/"
+ICON_MAPPING = {
+    "Netflix": "netflix_logo.png",
+    "Disney+": "disneyplus_logo.png",
+    "Hulu": "hulu_logo.png",
+    "Amazon Prime Video": "primevideo_logo.png",
+    "Peacock": "peacock_logo.png",
+    "Max": "max_logo.png",
+    "Apple TV+": "appletv_logo.png",
+    "Paramount+": "paramountplus_logo.png",
+    "Fubo": "fubo_logo.png",
+    "FXNow": "fxnow_logo.png",
+    "Google Play": "googleplay_logo.png",
+    "YouTube": "youtube_logo.png",
+    "iTunes": "itunes_logo.png",
+    "Microsoft Store": "microsoftstore_logo.png",
+    "Fandango": "fandango_logo.png",
+	"Vudu": "fandango_logo.png",
+	"Spectrum On Demand": "spectrum_logo.png",
+	"Tubi TV": "tubitv_logo.png",
+	"Pluto TV": "plutotv_logo.png",
+	"MGM+": "MGM_logo.png",
+	"The Roku Channel": "therokuchannel_logo.png",
+	"Plex": "plex_logo.png",
+	"Hoopla": "hoopla_logo.png"
+
+}
+
+STREAMING_URLS = {
+    "Netflix": "https://www.netflix.com/search?q=",
+    "Disney+": "https://www.disneyplus.com/search?q=",
+    "Hulu": "https://www.hulu.com/search?q=",
+    "Amazon Prime Video": "https://www.amazon.com/gp/video/storefront/s?k=",
+    "Peacock": "https://www.peacocktv.com/watch/search/?q=",
+    "Max": "https://play.max.com/search/result?q=",
+    "Apple TV+": "https://tv.apple.com/us/search/",
+    "Paramount+": "https://www.paramountplus.com/shows/",
+    "Fubo": "https://www.fubo.tv/p/search?query=",
+    "FXNow": "https://fxnow.fxnetworks.com/search?q=",
+	"MGM+": "https://www.mgmplus.com/search?query="
+}
+
+FREE_URLS = {
+	"Spectrum On Demand": "https://ondemand.spectrum.net/search/?q=",
+	"Hoopla": "https://www.hoopladigital.com/search?q={query}&amp;scope=everything&amp;type=direct",
+}
+
+ADS_URLS = {
+	"Pluto TV": "https://pluto.tv/us/search?utm_medium=deeplink&amp;utm_source=justwatch",
+	"The Roku Channel": "https://therokuchannel.roku.com/search/",
+	"Tubi TV": "https://tubitv.com/search/",
+	"Pluto TV": "https://pluto.tv/us/search?utm_medium=deeplink&amp;utm_source=justwatch"
+}
+
+PURCHASE_URLS = {
+	"Apple TV+": "https://tv.apple.com/us/search/",
+    "Google Play": "https://play.google.com/store/search?q={query}&amp;c=movies",
+    "YouTube": "https://www.youtube.com/results?search_query=",
+    "iTunes": "https://itunes.apple.com/us/search?term=",
+    "Microsoft Store": "https://www.microsoft.com/en-us/search/shop?q=",
+    "Amazon Prime Video": "https://www.amazon.com/gp/video/storefront/s?k=",
+    "Fandango": "https://athome.fandango.com/content/browse/search?minVisible=0&amp;returnUrl=%252Fcontent%252Fmovies%252F404&amp;searchString=",
+	"Spectrum On Demand": "https://ondemand.spectrum.net/search/?q=",
+	"Plex": "https://watch.plex.tv/movie/"
+}
+
+# Final list of services
+matched_services = []
+
+def format_search_url(base_url, query):
+    """Replaces `{query}` in URLs or appends if no placeholder exists."""
+    encoded_query = urllib.parse.quote(query)
+    if "{query}" in base_url:
+        return base_url.replace("{query}", encoded_query)
+    return base_url + encoded_query
+
+# ✅ Add ratings before final output
+ratings_text = f"⭐ IMDb: {imdb_rating}/10\n🍅 Rotten Tomatoes: {rotten_tomatoes_score}\n📊 Metacritic: {metacritic_score}"
+
+# Add streaming services (Restore `mapped_streaming_providers` logic)
+for provider, link in mapped_streaming_providers.items():
+    provider_name = PROVIDER_MAPPING.get(provider, provider)  # Normalize provider name
+    if is_provider_enabled(provider):  # Only include if enabled
+        search_url = link if link else format_search_url(STREAMING_URLS.get(provider, ""), query)
+
+        matched_services.append({
+            "title": f"Stream on {provider}",
+            "subtitle": f"Direct link to {query} on {provider}" if link else f"Search {query} on {provider}",
+            "arg": search_url,
+            "icon": {"path": ICON_PATH + ICON_MAPPING.get(provider, "default_logo.png")},
+            "text": {
+                "copy": search_url,
+                "largetype": ratings_text
+			}
+        })
+
+# Add free services 
+for provider, link in mapped_free_providers.items():
+    provider_name = PROVIDER_MAPPING.get(provider, provider)  # Normalize provider name
+    if is_provider_enabled(provider):  # Only include if enabled
+        search_url = link if link else format_search_url(FREE_URLS.get(provider, ""), query)
+
+        matched_services.append({
+            "title": f"🆓Stream for free on {provider}",
+            "subtitle": f"Direct link to {query} on {provider}" if link else f"Search {query} on {provider}",
+            "arg": search_url,
+            "icon": {"path": ICON_PATH + ICON_MAPPING.get(provider, "default_logo.png")},
+            "text": {
+                "copy": search_url,
+                "largetype": ratings_text
+			}
+        })
+
+# Add ads services 
+for provider, link in mapped_ads_providers.items():
+    provider_name = PROVIDER_MAPPING.get(provider, provider)  # Normalize provider name
+    if is_provider_enabled(provider):  # Only include if enabled
+        search_url = link if link else format_search_url(FREE_URLS.get(provider, ""), query)
+
+        matched_services.append({
+            "title": f"🆓Stream with ads on {provider}",
+            "subtitle": f"Direct link to {query} on {provider}" if link else f"Search {query} on {provider}",
+            "arg": search_url,
+            "icon": {"path": ICON_PATH + ICON_MAPPING.get(provider, "default_logo.png")},
+            "text": {
+                "copy": search_url,
+                "largetype": ratings_text
+			}
+        })
+
+# Add purchase services (Restore `mapped_purchase_providers` logic)
+for provider, link in mapped_purchase_providers.items():
+    provider_name = PROVIDER_MAPPING.get(provider, provider)  # Normalize provider name
+    if is_provider_enabled(provider): 
+        search_url = link if link else format_search_url(PURCHASE_URLS.get(provider, ""), query)
+
+        matched_services.append({
+            "title": f"💰Buy/rent on {provider}",
+            "subtitle": f"Direct purchase link for {query} on {provider}" if link else f"Search {query} to buy on {provider}",
+            "arg": search_url,
+            "icon": {"path": ICON_PATH + ICON_MAPPING.get(provider, "default_logo.png")},
+            "text": {
+                "copy": search_url,
+                "largetype": ratings_text
+			}
+        })
+
+matched_services.append({  # Insert at the top
+    "title": f"{movie_title} ({movie_year})",
+    "subtitle": f"⭐ IMDb: {imdb_rating}/10 | 🎭 {movie_genres} | 📜 {movie_description[:80]}...",
+    "arg": f"https://www.imdb.com/title/{imdb_id}/",  # IMDb link
+    "icon": {"path": ICON_PATH + "imdb_logo.png"},
+    "text": {
+        "copy": f"{movie_title} ({movie_year})\n⭐ IMDb: {imdb_rating}/10\n🎭 {movie_genres}\n📝 {movie_description}",
+		"largetype": f"{movie_title} ({movie_year})\n⭐ IMDb: {imdb_rating}/10\n🎭 {movie_genres}\n📝 {movie_description}"
+    }
+})
+
+sys.stderr.write("Streaming Providers Before Mapping: " + json.dumps(list(streaming_providers.keys())) + "\n")
+
+sys.stderr.write("Before Filtering - Streaming Providers: " + json.dumps(list(mapped_streaming_providers.keys())) + "\n")
+sys.stderr.write("Before Filtering - Purchase Providers: " + json.dumps(list(mapped_purchase_providers.keys())) + "\n")
+
+filtered_streaming = {k: v for k, v in mapped_streaming_providers.items() if is_provider_enabled(k)}
+filtered_purchase = {k: v for k, v in mapped_purchase_providers.items() if is_provider_enabled(k)}
+filtered_free = {k: v for k, v in mapped_free_providers.items() if is_provider_enabled(k)}
+
+sys.stderr.write("After Filtering - Streaming Providers: " + json.dumps(list(filtered_streaming.keys())) + "\n")
+sys.stderr.write("After Filtering - Purchase Providers: " + json.dumps(list(filtered_purchase.keys())) + "\n")
+sys.stderr.write("After Filtering - Free Providers: " + json.dumps(list(filtered_free.keys())) + "\n")
+
+# Auto-copy the search query when the user selects an option
+subprocess.run(f"echo '{query}' | pbcopy", shell=True)
+
+# Output results
+print(json.dumps({"items": matched_services}))
+</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string>Search for a movie, TV show, or streaming service</string>
+				<key>type</key>
+				<integer>9</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>5487E56D-9D43-47C7-A11B-FADD3D4547B3</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>keyword</key>
+				<string>seticon</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string></string>
+				<key>script</key>
+				<string>import os
+import json
+
+# Get the current workflow directory
+WORKFLOW_DIR = os.getcwd()
+ICON_DIR = os.path.join(WORKFLOW_DIR, "WatchNOW_icons")
+
+# Mapping icon filenames to nicely formatted display names
+ICON_NAME_MAPPING = {
+    "classic": "Classic",
+    "blue": "Dark Blue",
+    "orange": "Orange Flame",
+    "grapefruit": "Pink Grapefruit",
+    "red": "Dark Red",
+	"darkpurple": "Dark Purple",
+	"forrest": "Forrest Green",
+	"summer": "Summer",
+	"easter": "Easter", 
+	"colorful": "Colorful",
+	"colorful2": "Colorful 2",
+	"pastel": "Pastel",
+	"blurple": "Blurple",
+	"cottoncandy": "Cotton Candy",
+	"tiedye": "Tie-Dye"
+}
+
+# Generate a list of available icons
+icons_list = []
+for icon_file in os.listdir(ICON_DIR):
+    if icon_file.endswith(".png"):
+        icon_name = os.path.splitext(icon_file)[0]  # Remove ".png"
+        display_name = ICON_NAME_MAPPING.get(icon_name, icon_name)  # Use mapped name if available
+
+        # Append to Alfred JSON output
+        icons_list.append({
+            "title": display_name,
+            "subtitle": f"Set workflow icon to {display_name}",
+            "arg": icon_name,  # This will be passed to the next script
+            "icon": {"path": os.path.join(ICON_DIR, icon_file)}
+        })
+
+# Output the list in Alfred's JSON format
+print(json.dumps({"items": icons_list}))</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Choose from the list of options for the WatchNOW icon</string>
+				<key>title</key>
+				<string>Show icon options</string>
+				<key>type</key>
+				<integer>9</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>0E5F5518-55BF-4419-9887-609C8452ADBC</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>import os
+import sys
+import shutil
+
+# Get the workflow directory
+WORKFLOW_DIR = os.getcwd()
+ICON_DIR = os.path.join(WORKFLOW_DIR, "WatchNOW_icons")
+
+# Get the selected icon name from Alfred
+ICON_NAME = sys.argv[1]
+ICON_PATH = os.path.join(ICON_DIR, f"{ICON_NAME}.png")
+ALFRED_VERSION = "Alfred 5"  # Change to "Alfred 4" if using an older version
+
+# Mapping icon filenames to nicely formatted display names
+ICON_NAME_MAPPING = {
+    "classic": "Classic",
+    "blue": "Dark Blue",
+    "orange": "Orange Flame",
+    "grapefruit": "Pink Grapefruit",
+    "red": "Dark Red",
+	"darkpurple": "Dark Purple",
+	"forrest": "Forrest Green",
+	"summer": "Summer",
+	"easter": "Easter", 
+	"colorful": "Colorful",
+	"colorful2": "Colorful 2",
+	"pastel": "Pastel",
+	"blurple": "Blurple",
+	"cottoncandy": "Cotton Candy",
+	"tiedye": "Tie-Dye"
+}
+
+# Get formatted display name
+DISPLAY_NAME = ICON_NAME_MAPPING.get(ICON_NAME, ICON_NAME)
+
+# Check if the selected icon exists
+if os.path.exists(ICON_PATH):
+    # Replace the current workflow icon
+    shutil.copy(ICON_PATH, os.path.join(WORKFLOW_DIR, "icon.png"))
+    shutil.copy(ICON_PATH, os.path.join(WORKFLOW_DIR, "seticon.png"))
+    shutil.copy(ICON_PATH, os.path.join(WORKFLOW_DIR, "watch_icon.png"))
+    shutil.copy(ICON_PATH, os.path.join(WORKFLOW_DIR, "movie_search_icon.png"))
+
+    # Notify user of success
+    os.system(f'osascript -e \'display notification "Workflow icon updated to {DISPLAY_NAME}!" with title "WatchNOW"\'')
+    
+    # Restart Alfred to apply changes
+    os.system(f'osascript -e \'tell application "{ALFRED_VERSION}" to quit\'')
+    os.system("sleep 1")
+    os.system(f'open -a "{ALFRED_VERSION}"')
+else:
+    # Notify user if icon was not found
+    os.system(f'osascript -e \'display notification "Error: Icon {DISPLAY_NAME} not found!" with title "WatchNOW"\'')</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>9</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>85021313-7D1F-4A07-9C8A-74839C0CD1C2</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>![WatchNOW Icon](icon_small.png)
+# WatchNOW - Alfred Workflow 
+
+🚀 **Instantly find where to stream, rent, or buy any movie or TV show, and go directly to your content in as few clicks as possible!** 
+
+![WatchNOW Banner](images/watchnow-banner.png)
+
+---
+
+## **⚡ Features**
+✅ Search for any movie or TV show.   
+✅ Get instant streaming links.       
+✅ Check IMDb, Rotten Tomatoes, Metacritic ratings.   
+✅ See summaries and genres under IMDb result.   
+✅ Multi-region support.                         
+✅ Customizable icons with the `seticon` command.     
+
+---
+
+## **❓ HOW TO USE**
+
+### **🔍 Searching for a Movie**
+
+Use keyword `watch` followed by a movie or tv show for find where it's available. Streaming services are sorted by subscription-based, free, free with ads, and pay-per-view sites. Configureable to only show results for services you have an account with. 
+
+![Movie Search](images/movie_search.png)
+
+
+### **📺 Streaming Results**
+
+Just hit `return` while hovering over the streaming service of your choice to go straight to that site. Not all sites support deeplinking directly to content, so you will be routed to the search page and the name of the movie or tv show will be copied to your clipboard to paste if the deeplink doesn't fill in the search bar itself. 
+
+![Streaming Results](images/search_results.png)
+
+
+### ** 💯 See content ratings **
+
+Use `⌘ + L` while hovering over any streaming service to see content rating.
+
+![Ratings](images/ratings.png)
+
+
+### ** 📝 See more info and link to IMDb **
+
+Use `⌘ + L` while hovering over the IMDb result at the bottom of the search results to see more info including a summary, the movie genre, and IMDb rating. Or hit `return` to go straight to the IMDb page. **
+
+![IMDB info](images/IMDB_info.png)
+
+
+### ** 📝 Not sure what to watch?**
+
+Just type in a streaming service of your choosing, hit `return`, and browse away!
+
+![streaming service search](images/streaming_service_search.png)
+
+---
+
+## **🛠 Installation &amp; Set up**
+
+1. **Download** the latest version from [Alfred Gallery](https://alfred.app) or [GitHub Releases](https://github.com/lucsouth/WatchNOW---Alfred-Workflow/releases/tag/v1.0.0).
+2. **Double-click** the `.alfredworkflow` file to install.
+3. **Set your API Keys** 
+	- Go to Alfred’s Workflow Environment Variables                                                                                                        
+	- Paste your API keys in the correct variable                                                                                                         
+	- `TMDB_API_KEY`                                                                                                               
+	- `OMDB_API_KEY` (for Rotten Tomatoes &amp; Metacritic)                                                                           
+           
+3. **Configure your experience**                  
+	- Uncheck boxes for streaming services you don't have an account with or don't want to see in the results               
+	- Choose your region (doesn't yet support streaming services based in other countries, but any streaming services on TMDb can be added relatively easily)    
+	- Use the `seticon` command to change the WatchNOW icon color          
+
+---
+
+## 🔑 Setup API Keys
+
+This workflow requires API keys from:
+- **TMDb (The Movie Database)** → [Get a free API key](https://developer.themoviedb.org/reference/intro/getting-started)
+- **OMDb (Optional for Rotten Tomatoes &amp; Metacritic)** → [Get an API key](https://www.omdbapi.com/apikey.aspx)
+- Paste your keys in the evironment variables</string>
+	<key>uidata</key>
+	<dict>
+		<key>0E5F5518-55BF-4419-9887-609C8452ADBC</key>
+		<dict>
+			<key>xpos</key>
+			<real>70</real>
+			<key>ypos</key>
+			<real>340</real>
+		</dict>
+		<key>3786C485-4E78-47C5-82FA-FFB159BBC576</key>
+		<dict>
+			<key>xpos</key>
+			<real>70</real>
+			<key>ypos</key>
+			<real>195</real>
+		</dict>
+		<key>5487E56D-9D43-47C7-A11B-FADD3D4547B3</key>
+		<dict>
+			<key>xpos</key>
+			<real>265</real>
+			<key>ypos</key>
+			<real>195</real>
+		</dict>
+		<key>85021313-7D1F-4A07-9C8A-74839C0CD1C2</key>
+		<dict>
+			<key>xpos</key>
+			<real>265</real>
+			<key>ypos</key>
+			<real>340</real>
+		</dict>
+		<key>90EC2C01-FA89-47C4-A483-2B4C72B7B7B7</key>
+		<dict>
+			<key>xpos</key>
+			<real>460</real>
+			<key>ypos</key>
+			<real>195</real>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Netflix</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_NETFLIX</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Hulu</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_HULU</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Disney+</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_DISNEYPLUS</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Peacock</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_PEACOCK</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Max (HBO Max)</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_MAX</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Amazon Prime Video</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_AMAZON_PRIME_VIDEO</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Apple TV+</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_APPLE_TVPLUS</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Paramount+</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_PARAMOUNTPLUS</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Fandango (Vudu)</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_FANDANGO</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Google Play Store</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_GOOGLE_PLAY</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Microsoft Store</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_MICROSOFT_STORE</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show FuboTV</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_FUBO</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Youtube</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_YOUTUBE</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Itunes</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_ITUNES</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Spectrum On Demand</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_SPECTRUM_ON_DEMAND</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show FXNow</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_FXNOW</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show MGM+</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_MGMPLUS</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Tubi TV</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_TUBI_TV</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string></string>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Show Hoopla</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SHOW_HOOPLA</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>US</string>
+				<key>pairs</key>
+				<array>
+					<array>
+						<string>United States</string>
+						<string>US</string>
+					</array>
+					<array>
+						<string>Australia</string>
+						<string>AU</string>
+					</array>
+					<array>
+						<string>Brazil</string>
+						<string>BR</string>
+					</array>
+					<array>
+						<string>Canada</string>
+						<string>CA</string>
+					</array>
+					<array>
+						<string>China</string>
+						<string>CN</string>
+					</array>
+					<array>
+						<string>France</string>
+						<string>FR</string>
+					</array>
+					<array>
+						<string>Germany</string>
+						<string>DE</string>
+					</array>
+					<array>
+						<string>India</string>
+						<string>IN</string>
+					</array>
+					<array>
+						<string>Italy</string>
+						<string>IT</string>
+					</array>
+					<array>
+						<string>Japan</string>
+						<string>JP</string>
+					</array>
+					<array>
+						<string>Mexico</string>
+						<string>MX</string>
+					</array>
+					<array>
+						<string>South Korea</string>
+						<string>KR</string>
+					</array>
+					<array>
+						<string>Spain</string>
+						<string>ES</string>
+					</array>
+					<array>
+						<string>United Kingdon</string>
+						<string>GB</string>
+					</array>
+				</array>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Select your region (results may vary)</string>
+			<key>type</key>
+			<string>popupbutton</string>
+			<key>variable</key>
+			<string>COUNTRY_CODE</string>
+		</dict>
+	</array>
+	<key>variables</key>
+	<dict>
+		<key>OMDB_API_KEY</key>
+		<string>f3ec77f1</string>
+		<key>TMDB_API_KEY</key>
+		<string>50d59838b75f35e43967a7e0ba7a3c36</string>
+	</dict>
+	<key>variablesdontexport</key>
+	<array>
+		<string>TMDB_API_KEY</string>
+		<string>OMDB_API_KEY</string>
+	</array>
+	<key>version</key>
+	<string>1.0.0</string>
+	<key>webaddress</key>
+	<string>https://github.com/lucsouth/WatchNOW</string>
+</dict>
+</plist>
